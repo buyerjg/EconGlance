@@ -16,6 +16,7 @@ ${canonical ? `<link rel="canonical" href="${e(canonical)}">` : ''}
 <meta property="og:type" content="website">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/app.css">
+<script>try{var t=localStorage.getItem('tt-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
 <header class="site-header">
@@ -23,7 +24,10 @@ ${canonical ? `<link rel="canonical" href="${e(canonical)}">` : ''}
   <nav>
     <a href="/">Today</a>
     <a href="/indicators">Indicators</a>
+    <a href="/compare">Compare</a>
+    <a href="/calculators">Calculators</a>
     <a href="/login" id="account-link">Sign in</a>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch light or dark theme">◐</button>
   </nav>
 </header>
 <main class="wrap">

@@ -11,6 +11,8 @@ export async function onRequestGet(context) {
     return html(page({ title: SITE_NAME, description: 'Daily market brief', body: '<p class="note">Today\'s brief is temporarily unavailable. Please try again shortly.</p>' }), { maxAge: 60 });
   }
   const b = (data && data.brief) || {};
+  const mood = data && data.mood && data.mood.score !== undefined ? data.mood : null;
+  const releases = (data && data.releases) || [];
   const origin = new URL(request.url).origin;
 
   const marketGroups = [];
@@ -42,6 +44,21 @@ export async function onRequestGet(context) {
   <h1>What happened in markets today</h1>
   <p class="lede">${e(b.summary || '')}</p>
 </section>
+
+<div class="top-row">
+  ${mood ? `<section class="panel" id="mood">
+    <h2>Market stress gauge</h2>
+    <div><span class="mood-score">${e(mood.score)}</span><span class="mood-label">${e(mood.label)}</span></div>
+    <div class="gauge" role="img" aria-label="Gauge at ${e(mood.score)} of 100"><div class="gauge-marker" style="left:${Math.min(Math.max(+mood.score || 0, 0), 100)}%"></div></div>
+    <div class="gauge-scale"><span>High stress</span><span>Neutral</span><span>Very calm</span></div>
+    <p class="note">Week ago ${e(mood.week_ago ?? '—')} · Month ago ${e(mood.month_ago ?? '—')} · Year ago ${e(mood.year_ago ?? '—')}. Based on the St. Louis Fed Financial Stress Index (week of ${e(asOf(mood.as_of, 'daily'))}), ranked against readings since 2016.</p>
+  </section>` : ''}
+  <section class="panel" id="releases">
+    <h2>Latest releases</h2>
+    ${releases.length ? `<ul class="mini">${releases.slice(0, 8).map((r) => `<li><span><a href="${slug(r.series_id)}">${e(r.name)}</a> <span class="muted">${e(asOf(r.period, r.frequency))}</span></span><span class="${dir(r.chg)}">${e(officialValue(r.value, r.unit))}</span></li>`).join('')}</ul>` : '<p class="note">No new official releases in the last two weeks.</p>'}
+    <p class="note"><a href="/indicators">All indicators</a> · <a href="/compare">Compare</a> · <a href="/calculators">Calculators</a></p>
+  </section>
+</div>
 
 <section id="markets">
   <h2>Markets at the close</h2>

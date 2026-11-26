@@ -31,6 +31,18 @@
     }
   };
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const root = document.documentElement;
+      const current = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try { localStorage.setItem('tt-theme', next); } catch (e) {}
+    });
+  });
+
   document.addEventListener('DOMContentLoaded', async () => {
     const link = document.getElementById('account-link');
     if (!link) return;
