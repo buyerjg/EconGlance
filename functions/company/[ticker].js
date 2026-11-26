@@ -1,6 +1,6 @@
 import { rpc, escapeHtml as e } from '../_lib.js';
 import { page, html, SITE_NAME } from '../_layout.js';
-import { TICKER, companyName, money, moneyWords, pct, eps, dateText, fyName, renderFinancials, renderFund, companyLink, etfLink, etfName } from '../_fin.js';
+import { TICKER, companyName, money, moneyWords, pct, eps, dateText, fyName, renderFinancials, renderFund, companyLink, etfLink, etfName, investorLink, quarterName, changeCell } from '../_fin.js';
 
 // GET /company/:ticker — annual financials from SEC filings (latest 5 years; all years with a free account).
 export async function onRequestGet(context) {
@@ -10,11 +10,12 @@ export async function onRequestGet(context) {
   if (!TICKER.test(ticker)) return notFound();
   if (raw !== ticker) return Response.redirect(new URL(companyLink(ticker), request.url).toString(), 301);
 
-  let d, owners = [];
+  let d, owners = [], investors = [];
   try {
-    [d, owners] = await Promise.all([
+    [d, owners, investors] = await Promise.all([
       rpc(env, 'tt_company', { p_ticker: ticker, p_full: false }),
       rpc(env, 'tt_company_etfs', { p_ticker: ticker }).catch(() => []),
+      rpc(env, 'tt_company_investors', { p_ticker: ticker }).catch(() => []),
     ]);
   } catch (err) {
     return html(page({ title: SITE_NAME, description: '', body: '<p class="note">This page is temporarily unavailable.</p>' }), { maxAge: 60 });
@@ -48,6 +49,8 @@ export async function onRequestGet(context) {
   const peers = (d.peers || []).map(([t, n]) => `<a href="${companyLink(t)}"><strong>${e(t)}</strong><span>${e(companyName(n))}</span></a>`).join('');
   const more = (d.years_available || 0) > (d.annual || []).length;
   const ownerRows = (owners || []).map((o) => `<tr><td><a href="${etfLink(o.ticker)}"><strong>${e(o.ticker)}</strong></a> <span class="muted">${e(etfName(o.name))}</span></td><td class="num">${(+o.pct).toFixed(2)}%</td><td class="num">${e(money(o.value))}</td><td class="num muted">${e(o.rep_date || '')}</td></tr>`).join('');
+  const invRows = (investors || []).map((m) => `<tr><td><a href="${investorLink(m.slug)}"><strong>${e(m.person || m.display_name)}</strong></a> <span class="muted">${e(m.display_name)}</span></td><td class="num">${e(money(m.value))}</td><td class="num">${m.pct != null ? (+m.pct).toFixed(2) + '%' : '—'}</td><td>${changeCell(m)}</td><td class="num muted">${e(quarterName(m.period))}</td></tr>`).join('');
+  const investorsHtml = invRows ? `<h2 id="investors">Famous investors who own ${e(d.ticker)}</h2><div class="table-wrap"><table><thead><tr><th>Investor</th><th class="num">Value</th><th class="num">% of their portfolio</th><th>Last quarter</th><th class="num">As of</th></tr></thead><tbody>${invRows}</tbody></table></div><p class="note">From 13F filings. <a href="/investors">See all tracked investors</a>.</p>` : '';
   const ownersHtml = ownerRows ? `<h2 id="etfs">ETFs that hold ${e(name)}</h2><p class="note">Funds with the largest share of their assets in ${e(d.ticker)}, among the ${'300'} biggest ETFs.</p><div class="table-wrap"><table><thead><tr><th>ETF</th><th class="num">% of fund</th><th class="num">Value held</th><th class="num">As of</th></tr></thead><tbody>${ownerRows}</tbody></table></div>` : '';
   const secUrl = `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${d.cik}&type=10-K&dateb=&owner=include&count=40`;
 
@@ -64,6 +67,7 @@ export async function onRequestGet(context) {
 ${more ? `<p class="login-hint" id="fin-more"><button type="button" class="link-btn" id="fin-all">Show all ${d.years_available} years</button> — free with an account. <a href="/login">Sign in</a></p>` : ''}
 
 <div id="fin-tables" data-ticker="${e(d.ticker)}">${fin.html}</div>
+${investorsHtml}
 ${ownersHtml}
 ${peers ? `<h2>Companies of similar size</h2><div class="cards-link small">${peers}</div>` : ''}
 

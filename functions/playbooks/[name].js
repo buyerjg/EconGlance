@@ -43,6 +43,7 @@ export async function onRequestGet(context) {
   const body = `<p class="crumbs"><a href="/playbooks">Investor playbooks</a> · ${e(pb.investor)}</p>
 <h1>${e(pb.title)}</h1>
 ${pb.intro.map((p) => `<p class="lede">${e(p)}</p>`).join('')}
+${pb.portfolio ? `<p class="note">What the fund owns now: <a href="/investor/${pb.portfolio}">latest 13F portfolio</a>.</p>` : ''}
 ${pb.source ? `<p class="note">Source: <a href="${e(pb.source.url)}" rel="noopener" target="_blank">${e(pb.source.label)}</a></p>` : ''}
 <div class="panel"><strong>${e(summary)}</strong></div>
 <form class="controls" method="get"><label>Compare with <input type="date" name="vs" value="${e(vs)}" min="1991-01-01" max="${e(today)}"></label><button type="submit" class="btn">Compare</button></form>

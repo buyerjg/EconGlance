@@ -194,3 +194,29 @@ export function renderEtfHoldings(d) {
   }).join('');
   return rows ? `<div class="table-wrap"><table><thead><tr><th>#</th><th>Holding</th><th>Type</th><th class="num">% of fund</th><th class="num">Value</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<p class="note">No holdings reported.</p>';
 }
+
+// ---- famous investors' 13F portfolios ----
+export const investorLink = (s) => `/investor/${encodeURIComponent(s)}`;
+const QN = (d) => { if (!d) return ''; const [y, m] = String(d).split('-').map(Number); return `Q${Math.ceil(m / 3)} ${y}`; };
+export const quarterName = QN;
+const CHANGE = { new: ['New', 'up'], added: ['Added', 'up'], reduced: ['Reduced', 'down'], unchanged: ['No change', 'flat'], sold: ['Sold out', 'down'] };
+export function changeCell(h) {
+  const [label, cls] = CHANGE[h.change] || ['', 'flat'];
+  const pct = (h.change === 'added' || h.change === 'reduced') && h.shares_chg_pct != null ? ` ${h.shares_chg_pct > 0 ? '+' : ''}${(+h.shares_chg_pct).toFixed(0)}%` : '';
+  return `<span class="${cls}">${e(label + pct)}</span>`;
+}
+export function renderInvestorHoldings(d) {
+  const rows = (d.holdings || []).map((h, i) => {
+    const nm = e(companyName(h.issuer || ''));
+    const opt = h.put_call ? ` <span class="pill">${e(h.put_call)} options</span>` : '';
+    const link = h.ticker ? `<a href="${companyLink(h.ticker)}">${nm}</a> <span class="muted">${e(h.ticker)}</span>` : nm;
+    return `<tr><td class="num muted">${i + 1}</td><td>${link}${opt}</td><td class="num">${h.put_call ? '—' : (h.pct != null ? (+h.pct).toFixed(2) + '%' : '—')}</td><td class="num">${money(h.value)}</td><td class="num">${h.shares != null ? Math.round(h.shares).toLocaleString('en-US') : '—'}</td><td>${changeCell(h)}</td></tr>`;
+  }).join('');
+  const sold = (d.sold || []).map((h) => {
+    const nm = e(companyName(h.issuer || ''));
+    const link = h.ticker ? `<a href="${companyLink(h.ticker)}">${nm}</a> <span class="muted">${e(h.ticker)}</span>` : nm;
+    return `<li><span>${link}${h.put_call ? ` (${e(h.put_call)} options)` : ''}</span><span>${money(h.prev_value)}</span></li>`;
+  }).join('');
+  return (rows ? `<div class="table-wrap"><table><thead><tr><th>#</th><th>Holding</th><th class="num">% of portfolio</th><th class="num">Value</th><th class="num">Shares</th><th>Change vs. ${e(QN(d.prev_period))}</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<p class="note">No holdings reported.</p>') +
+    (sold ? `<h2 id="sold">Sold out in ${e(QN(d.period))}</h2><p class="note">Positions held at the end of ${e(QN(d.prev_period))}, with their value then.</p><ul class="mini">${sold}</ul>` : '');
+}

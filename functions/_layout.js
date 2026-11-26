@@ -26,6 +26,7 @@ ${canonical ? `<link rel="canonical" href="${e(canonical)}">` : ''}
     <a href="/indicators">Indicators</a>
     <a href="/companies">Companies</a>
     <a href="/etfs">ETFs</a>
+    <a href="/investors">Investors</a>
     <a href="/playbooks">Playbooks</a>
     <a href="/compare">Compare</a>
     <a href="/calculators">Calculators</a>

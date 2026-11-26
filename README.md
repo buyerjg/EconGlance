@@ -47,3 +47,9 @@ what America searched (Google Trends), and "this day in markets" 1–10 years ag
 
 - `/playbooks`, `/playbooks/buffett-indicator`, `/playbooks/druckenmiller-checklist`, `/playbooks/dalio-debt-cycle`.
 - Definitions and rules live in `functions/_playbooks.js`; data comes from FRED series in `briefing.series` (building-block series are `hidden` from the indicator list). `?vs=YYYY-MM-DD` compares any past date with today.
+
+## Famous investors (SEC Form 13F)
+
+- `briefing.managers` lists ~24 well-known managers (CIK, slug, person). Job `sec-13f` (every 10 minutes) runs `briefing.refresh_managers(6)`: loads each manager's two latest original 13F-HR filings into `briefing.mgr_holdings` (values normalised to dollars), keeps two quarters, and links holdings to `companies` by CUSIP (via ETF holdings) or issuer name.
+- `briefing.mgr_positions` compares the two quarters (new / added / reduced / sold).
+- Pages: `/investors`, `/investor/:slug` (top 25 public, all signed in), and "Famous investors who own …" on company pages.

@@ -66,6 +66,7 @@ export const PLAYBOOKS = {
     blurb: 'The macro signals Stanley Druckenmiller has described watching — Fed policy against growth, commodities and copper, credit, the economy — with today’s readings from official data.',
     defaultVs: '2026-01-15',
     source: { url: 'https://www.youtube.com/watch?v=6r3D-CMJkuI', label: 'Watch the November 2026 interview on YouTube' },
+    portfolio: 'duquesne-family-office',
     series: ['GDP', 'DFF', 'DFEDTARU', 'PPIACO', 'WPU102502', 'GZSPREAD', 'DRTSCILM', 'NFCICREDIT', 'STLFSI4', 'A191RL1Q225SBEA', 'UNRATE', 'PCEPILFE', 'DTWEXBGS'],
     intro: [
       'In a public conversation in November 2026, Druckenmiller compared the conditions he saw in January 2026 with those at the time. In January, he said, policy looked very loose: the federal funds rate was about 3.5% while nominal growth was around 6%, with more rate cuts expected. Commodities, copper included, were breaking out, market breadth was making new highs and credit spreads were tight, so a recession within a year looked very unlikely to him.',
@@ -112,6 +113,7 @@ export const PLAYBOOKS = {
   },
   'dalio-debt-cycle': {
     investor: 'Ray Dalio',
+    portfolio: 'bridgewater-associates',
     title: 'The Dalio debt-cycle dashboard',
     seoTitle: 'Ray Dalio debt cycle indicators: where the US stands today',
     blurb: 'Ray Dalio’s big-debt-cycle framework in numbers: government debt and deficits, the cost of servicing that debt, interest rates against growth, and household debt burdens.',
