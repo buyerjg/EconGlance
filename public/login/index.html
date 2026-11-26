@@ -37,7 +37,7 @@
     msg.textContent = 'Sending…';
     try {
       const sb = await window.ttSupabase();
-      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + '/' } });
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + (/^\/[A-Za-z0-9\/._-]*$/.test(new URLSearchParams(location.search).get('next') || '') ? new URLSearchParams(location.search).get('next') : '/') } });
       msg.textContent = error ? 'Could not send the link: ' + error.message : 'Check your inbox for the sign-in link.';
     } catch (e) {
       msg.textContent = 'Could not send the link. Please try again.';

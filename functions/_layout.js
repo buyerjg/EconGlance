@@ -24,6 +24,7 @@ ${canonical ? `<link rel="canonical" href="${e(canonical)}">` : ''}
   <nav>
     <a href="/">Today</a>
     <a href="/indicators">Indicators</a>
+    <a href="/companies">Companies</a>
     <a href="/compare">Compare</a>
     <a href="/calculators">Calculators</a>
     <a href="/login" id="account-link">Sign in</a>
@@ -34,7 +35,7 @@ ${canonical ? `<link rel="canonical" href="${e(canonical)}">` : ''}
 ${body}
 </main>
 <footer class="site-footer">
-  <p>Official data from U.S. government agencies via FRED®, Federal Reserve Bank of St. Louis. Market closes and news summaries link to their sources. For information only — not investment advice.</p>
+  <p>Official data from U.S. government agencies via FRED®, Federal Reserve Bank of St. Louis. Company financials from SEC EDGAR filings. Market closes and news summaries link to their sources. For information only — not investment advice.</p>
   <p>© ${new Date().getUTCFullYear()} The Trend Brief</p>
 </footer>
 <script src="/account.js" defer></script>
