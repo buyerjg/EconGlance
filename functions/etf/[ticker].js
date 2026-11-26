@@ -28,12 +28,13 @@ export async function onRequestGet(context) {
   const q = rets.every(([, v]) => v != null) ? (rets.reduce((a, [, v]) => a * (1 + v / 100), 1) - 1) * 100 : null;
   const top = (d.holdings || []).slice(0, 3).map((h) => etfName(h.name || h.title || '')).join(', ');
 
-  const lede = `${e(name)} (${e(d.ticker)}) had ${moneyWords(d.net_assets)} in net assets as of ${e(asOf)}, ` +
-    `making it No. ${d.rank} among the ETFs we track. It held ${Number(d.n_holdings || 0).toLocaleString('en-US')} positions` +
+  const lede = (d.multi_class
+      ? `The fund behind ${e(d.ticker)} (${e(name)}) had ${moneyWords(d.net_assets)} in net assets as of ${e(asOf)}, counting all its share classes, including mutual fund shares. It held`
+      : `${e(name)} (${e(d.ticker)}) had ${moneyWords(d.net_assets)} in net assets as of ${e(asOf)}, making it No. ${d.rank} among the ETFs we track. It held`) + ` ${Number(d.n_holdings || 0).toLocaleString('en-US')} positions` +
     (d.top10_pct != null ? `; the 10 largest made up ${(+d.top10_pct).toFixed(1)}% of the fund` : '') + '.' +
     (top ? ` Top holdings: ${e(top)}.` : '');
   const stats = [
-    ['Net assets', money(d.net_assets), asOf],
+    [d.multi_class ? 'Fund net assets (all share classes)' : 'Net assets', money(d.net_assets), asOf],
     ['Holdings', Number(d.n_holdings || 0).toLocaleString('en-US'), ''],
     ['Top 10 weight', d.top10_pct != null ? (+d.top10_pct).toFixed(1) + '%' : '—', ''],
     ['3-month return', q != null ? (q > 0 ? '+' : '') + q.toFixed(2) + '%' : '—', rets.length ? `${rets[0][0]} – ${rets[2][0]}` : ''],
@@ -57,7 +58,7 @@ ${similar ? `<h2>ETFs with similar holdings</h2><p class="note">Overlap is the s
   <p class="note">From the fund’s monthly portfolio report (Form N-PORT) filed with the SEC on ${e(dateText(d.filed))}, for holdings as of ${e(asOf)}. Funds publish these reports with a delay of up to about two months, so holdings may have changed since. Weights are shares of net assets. <a href="${e(secUrl)}" rel="nofollow noopener" target="_blank">View ${e(d.ticker)} filings on SEC EDGAR</a>. For information only — not investment advice.</p>
 </section>`;
   return html(page({
-    title: `${d.ticker} Holdings: Top 10 Stocks in ${name} | ${SITE_NAME}`,
+    title: `${d.ticker} Holdings: Top 10 Holdings of ${name} | ${SITE_NAME}`,
     description: `${name} (${d.ticker}) top holdings${top ? `: ${top}` : ''}. Net assets of ${moneyWords(d.net_assets)} as of ${asOf}, from SEC filings.`,
     canonical: `${origin}${etfLink(d.ticker)}`, body,
     scripts: '<script src="/etf.js" defer></script>',
