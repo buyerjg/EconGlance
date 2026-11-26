@@ -12,7 +12,7 @@ export async function onRequestGet(context) {
   let list = [];
   try { list = await rpc(env, 'tt_companies', { p_sort: key, p_limit: 100 }); } catch (err) { list = []; }
   const showRev = key !== 'revenue';
-  const rows = list.map((c, i) => `<tr><td class="num muted">${i + 1}</td><td><a href="${companyLink(c.ticker)}">${e(companyName(c.name))}</a> <span class="muted">${e(c.ticker)}</span></td><td class="num"><strong>${e(r.fmt(c))}</strong></td>${showRev ? `<td class="num">${e(money(c.revenue))}</td>` : `<td class="num ${+c.revenue_growth >= 0 ? 'up' : 'down'}">${e(pct(c.revenue_growth, { sign: true }))}</td>`}<td class="num muted">${e(fyName(c.fy_end))}</td></tr>`).join('');
+  const rows = r.fund ? list.map((c, i) => `<tr><td class="num muted">${i + 1}</td><td><a href="${companyLink(c.ticker)}">${e(companyName(c.name))}</a> <span class="muted">${e(c.ticker)}</span></td><td class="num"><strong>${e(r.fmt(c))}</strong></td><td class="num ${+c.net_income >= 0 ? 'up' : 'down'}">${e(money(c.net_income))}</td><td class="num muted">${e(c.latest_assets_date || '')}</td></tr>`).join('') : list.map((c, i) => `<tr><td class="num muted">${i + 1}</td><td><a href="${companyLink(c.ticker)}">${e(companyName(c.name))}</a> <span class="muted">${e(c.ticker)}</span></td><td class="num"><strong>${e(r.fmt(c))}</strong></td>${showRev ? `<td class="num">${e(money(c.revenue))}</td>` : `<td class="num ${+c.revenue_growth >= 0 ? 'up' : 'down'}">${e(pct(c.revenue_growth, { sign: true }))}</td>`}<td class="num muted">${e(fyName(c.fy_end))}</td></tr>`).join('');
   const others = Object.entries(RANKINGS).filter(([k]) => k !== key).map(([k, o]) => `<a href="/rankings/${k.replace(/_/g, '-')}">${e(o.short)}</a>`).join(' · ');
   const year = new Date().getUTCFullYear();
   const top3 = list.slice(0, 3).map((c) => companyName(c.name)).join(', ');
@@ -21,8 +21,8 @@ export async function onRequestGet(context) {
 <h1>${e(r.title)} (${year})</h1>
 <p class="lede">${e(r.blurb)} Data from SEC filings, updated daily.${top3 ? ` The top three: ${e(top3)}.` : ''}</p>
 <p class="note">Other rankings: ${others}</p>
-<div class="table-wrap"><table><thead><tr><th>#</th><th>Company</th><th class="num">${e(r.col)}</th><th class="num">${showRev ? 'Revenue' : 'Growth'}</th><th class="num">Fiscal year</th></tr></thead><tbody>${rows || '<tr><td colspan="5" class="note">Data is temporarily unavailable.</td></tr>'}</tbody></table></div>
-<p class="note">Covers about 1,800 US-listed companies with at least $1 billion in annual revenue or $200 million in net income. Figures are as reported (GAAP), not adjusted. Not investment advice.</p>`;
+<div class="table-wrap"><table><thead><tr><th>#</th><th>${r.fund ? "ETF" : "Company"}</th><th class="num">${e(r.col)}</th><th class="num">${r.fund ? 'Net gain (latest year)' : showRev ? 'Revenue' : 'Growth'}</th><th class="num">${r.fund ? 'As of' : 'Fiscal year'}</th></tr></thead><tbody>${rows || '<tr><td colspan="5" class="note">Data is temporarily unavailable.</td></tr>'}</tbody></table></div>
+<p class="note">${r.fund ? 'Covers commodity and crypto exchange-traded trusts that file annual reports with the SEC and hold at least $300 million. Stock and bond ETFs report differently and are not included. Values are at quarter-end, not live prices.' : 'Covers about 1,800 US-listed companies with at least $1 billion in annual revenue or $200 million in net income. Figures are as reported (GAAP), not adjusted.'} Not investment advice.</p>`;
 
   return html(page({
     title: `${r.title} (${year}) | ${SITE_NAME}`,

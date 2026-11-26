@@ -4,7 +4,7 @@ import { escapeHtml as e } from './_lib.js';
 export const TICKER = /^[A-Z0-9.\-]{1,12}$/;
 
 const KEEP_UPPER = new Set(['LP', 'L.P.', 'LLC', 'PLC', 'NV', 'N.V.', 'AG', 'SA', 'S.A.', 'SE', 'REIT', 'USA', 'US', 'U.S.', 'AT&T', 'II', 'III', 'IV', 'NYSE', 'ADR', 'BDC', 'HP', 'IBM', 'AMC', 'CSX', 'CVS', 'CMS', 'DTE', 'AES', 'NRG', 'PPG', 'PPL', 'TJX', 'UPS', 'WEC', 'MSCI', 'KLA', 'NVIDIA', 'AMD', 'AMETEK', 'TE', 'RTX', 'GE', 'PG&E', 'ON', 'ADT', 'AT', 'BJ', 'CBRE', 'CDW', 'DXC', 'EOG', 'EQT', 'FMC', 'IDEX', 'IQVIA', 'LKQ', 'NCR', 'NVR', 'ONEOK', 'PTC', 'RPM', 'SBA', 'SLM', 'TKO', 'UGI', 'WPP', 'XPO']);
-const SPECIAL = { JPMORGAN: 'JPMorgan', MCKESSON: 'McKesson', MCDONALDS: "McDonald's", "MCDONALD'S": "McDonald's", MCCORMICK: 'McCormick', PAYPAL: 'PayPal', EBAY: 'eBay', FEDEX: 'FedEx', BLACKROCK: 'BlackRock', MORGAN: 'Morgan', ABBVIE: 'AbbVie', MASTERCARD: 'Mastercard', NETAPP: 'NetApp', DOORDASH: 'DoorDash', SALESFORCE: 'Salesforce', GODADDY: 'GoDaddy', CARMAX: 'CarMax', AUTOZONE: 'AutoZone', HUBSPOT: 'HubSpot', FIRSTENERGY: 'FirstEnergy', CENTERPOINT: 'CenterPoint', NEXTERA: 'NextEra', PEPSICO: 'PepsiCo', BIOGEN: 'Biogen', DUPONT: 'DuPont', MCMORAN: 'McMoRan', LABCORP: 'Labcorp', JETBLUE: 'JetBlue', QUALCOMM: 'Qualcomm', PULTEGROUP: 'PulteGroup', 'O\'REILLY': "O'Reilly", CONOCOPHILLIPS: 'ConocoPhillips', EXXONMOBIL: 'ExxonMobil', 'T-MOBILE': 'T-Mobile', ICAHN: 'Icahn', UNITEDHEALTH: 'UnitedHealth', CROWDSTRIKE: 'CrowdStrike', MICROSTRATEGY: 'MicroStrategy', WORKDAY: 'Workday', ONEMAIN: 'OneMain', SOFI: 'SoFi', ROBINHOOD: 'Robinhood', PALANTIR: 'Palantir', APPLOVIN: 'AppLovin', COREWEAVE: 'CoreWeave', IHEARTMEDIA: 'iHeartMedia' };
+const SPECIAL = { JPMORGAN: 'JPMorgan', MCKESSON: 'McKesson', MCDONALDS: "McDonald's", "MCDONALD'S": "McDonald's", MCCORMICK: 'McCormick', PAYPAL: 'PayPal', EBAY: 'eBay', FEDEX: 'FedEx', BLACKROCK: 'BlackRock', MORGAN: 'Morgan', ABBVIE: 'AbbVie', MASTERCARD: 'Mastercard', NETAPP: 'NetApp', DOORDASH: 'DoorDash', SALESFORCE: 'Salesforce', GODADDY: 'GoDaddy', CARMAX: 'CarMax', AUTOZONE: 'AutoZone', HUBSPOT: 'HubSpot', FIRSTENERGY: 'FirstEnergy', CENTERPOINT: 'CenterPoint', NEXTERA: 'NextEra', PEPSICO: 'PepsiCo', BIOGEN: 'Biogen', DUPONT: 'DuPont', MCMORAN: 'McMoRan', LABCORP: 'Labcorp', JETBLUE: 'JetBlue', QUALCOMM: 'Qualcomm', PULTEGROUP: 'PulteGroup', 'O\'REILLY': "O'Reilly", CONOCOPHILLIPS: 'ConocoPhillips', EXXONMOBIL: 'ExxonMobil', 'T-MOBILE': 'T-Mobile', ICAHN: 'Icahn', UNITEDHEALTH: 'UnitedHealth', CROWDSTRIKE: 'CrowdStrike', MICROSTRATEGY: 'MicroStrategy', WORKDAY: 'Workday', ONEMAIN: 'OneMain', SOFI: 'SoFi', ROBINHOOD: 'Robinhood', PALANTIR: 'Palantir', APPLOVIN: 'AppLovin', COREWEAVE: 'CoreWeave', IHEARTMEDIA: 'iHeartMedia', SPDR: 'SPDR', ISHARES: 'iShares', PROSHARES: 'ProShares', VANECK: 'VanEck', ABRDN: 'abrdn', GRAYSCALE: 'Grayscale' };
 const SHORT = { INC: 'Inc.', CORP: 'Corp.', CO: 'Co.', LTD: 'Ltd.', HOLDINGS: 'Holdings', GROUP: 'Group', COMPANY: 'Company', CORPORATION: 'Corporation', INCORPORATED: 'Incorporated', 'INC.': 'Inc.', 'CORP.': 'Corp.', 'CO.': 'Co.', 'LTD.': 'Ltd.' };
 
 // "AMAZON COM INC" -> "Amazon.com Inc."; "FNB CORP/PA/" -> "FNB Corp."
@@ -83,6 +83,7 @@ export const RANKINGS = {
   fcf: { title: 'US companies generating the most free cash flow', short: 'Free cash flow', col: 'Free cash flow', fmt: (r) => money(r.fcf), blurb: 'Operating cash flow minus capital expenditures in the latest fiscal year.' },
   buybacks: { title: 'Largest stock buybacks', short: 'Buybacks', col: 'Buybacks', fmt: (r) => money(r.buybacks), blurb: 'Cash spent repurchasing the company’s own common stock in the latest fiscal year.' },
   dividends: { title: 'Largest dividend payers', short: 'Dividends paid', col: 'Dividends paid', fmt: (r) => money(r.dividends), blurb: 'Total cash dividends paid in the latest fiscal year.' },
+  fund_assets: { title: 'Largest gold, silver & crypto ETFs by assets', short: 'Gold & crypto ETFs', col: 'Holdings', fund: true, fmt: (r) => money(r.latest_assets), blurb: 'Exchange-traded trusts that hold gold, silver, other metals, oil or crypto, ranked by the value of what they hold at the latest quarter-end reported to the SEC.' },
   losses: { title: 'US public companies with the biggest losses', short: 'Biggest losses', col: 'Net loss', fmt: (r) => money(r.net_income), blurb: 'Largest net losses in the latest fiscal year.' },
 };
 
@@ -151,5 +152,20 @@ export function renderFinancials(d) {
   ].join('');
 
   const chart = years.map((a) => [fyName(a.end_date) || a.period.slice(2), v(a, 'revenue') ?? null, v(a, 'net_income') ?? null]);
+  return { html: htmlOut, chart };
+}
+
+// Gold / silver / crypto ETFs (trusts that file 10-Ks): holdings history and yearly gains.
+export function renderFund(d) {
+  const hs = (d.holdings || []).filter((h) => h.vals && (h.vals.fund_holdings != null || h.vals.assets != null));
+  const units = hs.some((h) => h.vals.crypto_units != null);
+  const hRows = hs.map((h) => `<tr><th scope="row">${e(dateText(h.end_date))}</th><td class="num">${money(h.vals.fund_holdings ?? h.vals.assets)}</td><td class="num">${h.vals.nav_per_share != null ? '$' + (+h.vals.nav_per_share).toFixed(2) : '—'}</td>${units ? `<td class="num">${h.vals.crypto_units != null ? Math.round(h.vals.crypto_units).toLocaleString('en-US') : '—'}</td>` : ''}</tr>`).join('');
+  const ann = (d.annual || []).filter((a) => a.vals && a.vals.net_income != null);
+  const aRows = ann.map((a) => `<tr><th scope="row">${e(a.period.slice(2))}</th><td class="num ${+a.vals.net_income >= 0 ? 'up' : 'down'}">${money(a.vals.net_income)}</td></tr>`).join('');
+  const htmlOut = [
+    hRows ? `<h2 id="holdings">Holdings over time</h2><div class="table-wrap"><table class="fin"><thead><tr><th>As of</th><th class="num">Value of holdings</th><th class="num">NAV per share</th>${units ? '<th class="num">Coins held</th>' : ''}</tr></thead><tbody>${hRows}</tbody></table></div>` : '',
+    aRows ? `<h2 id="gains">Net gain or loss by year</h2><p class="note">Mostly the change in value of the metal or coins held, minus the fund’s fees.</p><div class="table-wrap"><table class="fin"><thead><tr><th>Year</th><th class="num">Net gain (loss)</th></tr></thead><tbody>${aRows}</tbody></table></div>` : '',
+  ].join('');
+  const chart = hs.slice().reverse().map((h) => [monthText(h.end_date), h.vals.fund_holdings ?? h.vals.assets ?? null, null]);
   return { html: htmlOut, chart };
 }
