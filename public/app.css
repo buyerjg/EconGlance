@@ -112,3 +112,12 @@ th.num { text-align: right; } td.num { text-align: right; }
 .search-results span { color: var(--muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 table.narrow-table { max-width: 360px; }
+/* playbooks */
+.pill { display: inline-block; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); }
+.pill.up { color: var(--up); border-color: currentColor; } .pill.down { color: var(--down); border-color: currentColor; }
+.num-big { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; }
+.small { font-size: 12px; }
+table.playbook th[scope=row] { width: 42%; font-weight: 600; color: var(--fg); font-size: 15px; }
+table.playbook tr.changed { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.quick-links a { margin-right: 10px; font-size: 14px; } .quick-links a.active { font-weight: 700; text-decoration: underline; }
+.btn { padding: 8px 14px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-size: 15px; cursor: pointer; }

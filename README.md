@@ -42,3 +42,8 @@ what America searched (Google Trends), and "this day in markets" 1–10 years ag
 - `briefing.etfs` lists ~300 large ETFs (`fund_key` = SEC series ID, or the trust's CIK for unit investment trusts such as SPY, DIA, MDY). `briefing.etf_holdings` keeps each fund's top 50 holdings, linked to `companies` by issuer name where unambiguous.
 - Job `etf-nport` (every 5 minutes) runs `briefing.refresh_etfs(15)`: checks the 15 least recently checked ETFs for a newer public N-PORT and loads it. Every ETF is checked about once a day.
 - Pages: `/etfs`, `/etf/:ticker` (top 10 public, top 50 signed in), and an "ETFs that hold …" table on each company page.
+
+## Investor playbooks
+
+- `/playbooks`, `/playbooks/buffett-indicator`, `/playbooks/druckenmiller-checklist`, `/playbooks/dalio-debt-cycle`.
+- Definitions and rules live in `functions/_playbooks.js`; data comes from FRED series in `briefing.series` (building-block series are `hidden` from the indicator list). `?vs=YYYY-MM-DD` compares any past date with today.
