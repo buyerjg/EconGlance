@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in | TrendTracker Today</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="/">TrendTracker<span>Today</span></a>
+  <nav><a href="/">Today</a><a href="/indicators">Indicators</a></nav>
+</header>
+<main class="wrap narrow">
+  <h1>Sign in</h1>
+  <p>A free account unlocks full history (5Y, 10Y and since 2015) on every indicator chart. We'll email you a sign-in link — no password needed.</p>
+  <form id="login-form" class="login-form">
+    <label for="email">Email</label>
+    <input id="email" type="email" required autocomplete="email" placeholder="you@example.com">
+    <button type="submit">Email me a sign-in link</button>
+  </form>
+  <p id="login-msg" class="note" aria-live="polite"></p>
+</main>
+<script src="/account.js"></script>
+<script>
+  const form = document.getElementById('login-form');
+  const msg = document.getElementById('login-msg');
+  form.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    if (!email) return;
+    form.querySelector('button').disabled = true;
+    msg.textContent = 'Sending…';
+    try {
+      const sb = await window.ttSupabase();
+      const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.origin + '/' } });
+      msg.textContent = error ? 'Could not send the link: ' + error.message : 'Check your inbox for the sign-in link.';
+    } catch (e) {
+      msg.textContent = 'Could not send the link. Please try again.';
+    }
+    form.querySelector('button').disabled = false;
+  });
+</script>
+</body>
+</html>
