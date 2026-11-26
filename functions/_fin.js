@@ -3,7 +3,7 @@ import { escapeHtml as e } from './_lib.js';
 
 export const TICKER = /^[A-Z0-9.\-]{1,12}$/;
 
-const KEEP_UPPER = new Set(['LP', 'L.P.', 'LLC', 'PLC', 'NV', 'N.V.', 'AG', 'SA', 'S.A.', 'SE', 'REIT', 'USA', 'US', 'U.S.', 'AT&T', 'II', 'III', 'IV', 'NYSE', 'ADR', 'BDC', 'HP', 'IBM', 'AMC', 'CSX', 'CVS', 'CMS', 'DTE', 'AES', 'NRG', 'PPG', 'PPL', 'TJX', 'UPS', 'WEC', 'MSCI', 'KLA', 'NVIDIA', 'AMD', 'AMETEK', 'TE', 'RTX', 'GE', 'PG&E', 'ON', 'ADT', 'AT', 'BJ', 'CBRE', 'CDW', 'DXC', 'EOG', 'EQT', 'FMC', 'IDEX', 'IQVIA', 'LKQ', 'NCR', 'NVR', 'ONEOK', 'PTC', 'RPM', 'SBA', 'SLM', 'TKO', 'UGI', 'WPP', 'XPO']);
+const KEEP_UPPER = new Set(['ETF', 'ETN', 'QQQ', 'REIT', 'ESG', 'LP', 'L.P.', 'LLC', 'PLC', 'NV', 'N.V.', 'AG', 'SA', 'S.A.', 'SE', 'REIT', 'USA', 'US', 'U.S.', 'AT&T', 'II', 'III', 'IV', 'NYSE', 'ADR', 'BDC', 'HP', 'IBM', 'AMC', 'CSX', 'CVS', 'CMS', 'DTE', 'AES', 'NRG', 'PPG', 'PPL', 'TJX', 'UPS', 'WEC', 'MSCI', 'KLA', 'NVIDIA', 'AMD', 'AMETEK', 'TE', 'RTX', 'GE', 'PG&E', 'ON', 'ADT', 'AT', 'BJ', 'CBRE', 'CDW', 'DXC', 'EOG', 'EQT', 'FMC', 'IDEX', 'IQVIA', 'LKQ', 'NCR', 'NVR', 'ONEOK', 'PTC', 'RPM', 'SBA', 'SLM', 'TKO', 'UGI', 'WPP', 'XPO']);
 const SPECIAL = { JPMORGAN: 'JPMorgan', MCKESSON: 'McKesson', MCDONALDS: "McDonald's", "MCDONALD'S": "McDonald's", MCCORMICK: 'McCormick', PAYPAL: 'PayPal', EBAY: 'eBay', FEDEX: 'FedEx', BLACKROCK: 'BlackRock', MORGAN: 'Morgan', ABBVIE: 'AbbVie', MASTERCARD: 'Mastercard', NETAPP: 'NetApp', DOORDASH: 'DoorDash', SALESFORCE: 'Salesforce', GODADDY: 'GoDaddy', CARMAX: 'CarMax', AUTOZONE: 'AutoZone', HUBSPOT: 'HubSpot', FIRSTENERGY: 'FirstEnergy', CENTERPOINT: 'CenterPoint', NEXTERA: 'NextEra', PEPSICO: 'PepsiCo', BIOGEN: 'Biogen', DUPONT: 'DuPont', MCMORAN: 'McMoRan', LABCORP: 'Labcorp', JETBLUE: 'JetBlue', QUALCOMM: 'Qualcomm', PULTEGROUP: 'PulteGroup', 'O\'REILLY': "O'Reilly", CONOCOPHILLIPS: 'ConocoPhillips', EXXONMOBIL: 'ExxonMobil', 'T-MOBILE': 'T-Mobile', ICAHN: 'Icahn', UNITEDHEALTH: 'UnitedHealth', CROWDSTRIKE: 'CrowdStrike', MICROSTRATEGY: 'MicroStrategy', WORKDAY: 'Workday', ONEMAIN: 'OneMain', SOFI: 'SoFi', ROBINHOOD: 'Robinhood', PALANTIR: 'Palantir', APPLOVIN: 'AppLovin', COREWEAVE: 'CoreWeave', IHEARTMEDIA: 'iHeartMedia', SPDR: 'SPDR', ISHARES: 'iShares', PROSHARES: 'ProShares', VANECK: 'VanEck', ABRDN: 'abrdn', GRAYSCALE: 'Grayscale' };
 const SHORT = { INC: 'Inc.', CORP: 'Corp.', CO: 'Co.', LTD: 'Ltd.', HOLDINGS: 'Holdings', GROUP: 'Group', COMPANY: 'Company', CORPORATION: 'Corporation', INCORPORATED: 'Incorporated', 'INC.': 'Inc.', 'CORP.': 'Corp.', 'CO.': 'Co.', 'LTD.': 'Ltd.' };
 
@@ -168,4 +168,29 @@ export function renderFund(d) {
   ].join('');
   const chart = hs.slice().reverse().map((h) => [monthText(h.end_date), h.vals.fund_holdings ?? h.vals.assets ?? null, null]);
   return { html: htmlOut, chart };
+}
+
+// ---- ETFs from SEC Form N-PORT ----
+const ASSET = { EC: 'Stock', EP: 'Preferred stock', DBT: 'Bond', STIV: 'Cash fund', 'ABS-MBS': 'Mortgage-backed', 'ABS-O': 'Asset-backed', 'ABS-CBDO': 'Asset-backed', 'ABS-APCP': 'Asset-backed', LON: 'Loan', RE: 'Real estate', COMM: 'Commodity', DE: 'Derivative', DIR: 'Derivative', DCO: 'Derivative', DCR: 'Derivative', DFE: 'Derivative', DO: 'Derivative', OTHER: 'Other', RF: 'Fund', SN: 'Structured note' };
+export const etfLink = (t) => `/etf/${encodeURIComponent(t)}`;
+export function etfName(n) { return companyName(n); }
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+// the three monthly returns in a report end with the report month
+export function etfReturns(d) {
+  const r = (d.returns || [])[0];
+  if (!r || !d.rep_date) return [];
+  const [y, m] = String(d.rep_date).split('-').map(Number);
+  return [r.r1, r.r2, r.r3].map((v, i) => {
+    const mm = (m - 3 + i + 12) % 12;
+    const yy = m - 3 + i < 0 ? y - 1 : y;
+    return [`${MONTHS[mm]} ${yy}`, v == null ? null : +v];
+  });
+}
+export function renderEtfHoldings(d) {
+  const rows = (d.holdings || []).map((h) => {
+    const nm = e(companyName(h.name || h.title || ''));
+    const link = h.ticker ? `<a href="${companyLink(h.ticker)}">${nm}</a> <span class="muted">${e(h.ticker)}</span>` : nm;
+    return `<tr><td class="num muted">${h.rank}</td><td>${link}</td><td class="muted">${e(ASSET[h.asset_cat] || h.asset_cat || '')}</td><td class="num">${h.pct != null ? (+h.pct).toFixed(2) + '%' : '—'}</td><td class="num">${money(h.value)}</td></tr>`;
+  }).join('');
+  return rows ? `<div class="table-wrap"><table><thead><tr><th>#</th><th>Holding</th><th>Type</th><th class="num">% of fund</th><th class="num">Value</th></tr></thead><tbody>${rows}</tbody></table></div>` : '<p class="note">No holdings reported.</p>';
 }

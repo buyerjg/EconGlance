@@ -8,8 +8,16 @@ export async function onRequestGet(context) {
   if (q.length < 1 || /[%_\\]/.test(q)) return json([], { maxAge: 300 });
   return cached(request, context, 3600, async () => {
     try {
-      const list = await rpc(env, 'tt_companies', { p_sort: 'revenue', p_limit: 10, p_q: q });
-      return json(list.map((r) => ({ t: r.ticker, n: companyName(r.name) })), { maxAge: 3600 });
+      const [list, etfs] = await Promise.all([
+        rpc(env, 'tt_companies', { p_sort: 'revenue', p_limit: 8, p_q: q }),
+        rpc(env, 'tt_etfs', { p_limit: 5, p_q: q }).catch(() => []),
+      ]);
+      const up = q.toUpperCase();
+      const out = [
+        ...etfs.map((r) => ({ t: r.ticker, n: companyName(r.name), k: 'etf' })),
+        ...list.map((r) => ({ t: r.ticker, n: companyName(r.name), k: r.kind === 'fund' ? 'fund' : 'co' })),
+      ].sort((a, b) => (b.t === up) - (a.t === up)).slice(0, 10);
+      return json(out, { maxAge: 3600 });
     } catch (e) {
       return json({ error: 'Search is temporarily unavailable.' }, { status: 503 });
     }

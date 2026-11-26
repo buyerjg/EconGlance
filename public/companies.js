@@ -4,15 +4,16 @@
   const list = document.getElementById('co-results');
   if (!input) return;
   let timer, last = '', items = [], active = -1;
-  const go = (t) => { location.href = '/company/' + encodeURIComponent(t); };
+  const href = (it) => (it.k === 'etf' ? '/etf/' : '/company/') + encodeURIComponent(it.t);
+  const go = (it) => { location.href = href(it); };
   function render() {
     list.innerHTML = '';
     items.forEach((it, i) => {
       const li = document.createElement('li');
       const a = document.createElement('a');
-      a.href = '/company/' + encodeURIComponent(it.t);
+      a.href = href(it);
       const b = document.createElement('strong'); b.textContent = it.t;
-      const s = document.createElement('span'); s.textContent = ' ' + it.n;
+      const s = document.createElement('span'); s.textContent = ' ' + it.n + (it.k === 'etf' ? ' · ETF' : '');
       a.append(b, s); li.append(a);
       if (i === active) li.className = 'active';
       list.append(li);
@@ -38,9 +39,9 @@
     else if (ev.key === 'ArrowUp' && items.length) { active = (active - 1 + items.length) % items.length; render(); ev.preventDefault(); }
     else if (ev.key === 'Enter') {
       ev.preventDefault();
-      if (active >= 0 && items[active]) go(items[active].t);
-      else if (items[0]) go(items[0].t);
-      else if (/^[A-Za-z.\-]{1,8}$/.test(input.value.trim())) go(input.value.trim().toUpperCase());
+      if (active >= 0 && items[active]) go(items[active]);
+      else if (items[0]) go(items[0]);
+      else if (/^[A-Za-z.\-]{1,8}$/.test(input.value.trim())) go({ t: input.value.trim().toUpperCase(), k: 'co' });
     }
   });
 })();

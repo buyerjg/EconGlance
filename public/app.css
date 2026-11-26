@@ -111,3 +111,4 @@ th.num { text-align: right; } td.num { text-align: right; }
 .search-results li.active a, .search-results a:hover { background: var(--panel); text-decoration: none; }
 .search-results span { color: var(--muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+table.narrow-table { max-width: 360px; }

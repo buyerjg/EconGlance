@@ -36,3 +36,9 @@ what America searched (Google Trends), and "this day in markets" 1–10 years ag
 - Tables in the `briefing` schema: `companies` (tickers), `fin_tags` (which XBRL tags map to which metric), `fin_raw` (values), `fin_bad` (values rejected as filer errors), `company_latest` (rankings summary).
 - Daily job `sec-financials` (22:40 UTC) runs `briefing.refresh_financials()`: refreshes the latest years and quarters, checks suspicious annual values against each company's own 10-K (`repair_suspects`), and rebuilds rankings. Ticker list refreshes weekly (`sec-companies`).
 - Pages: `/companies`, `/company/:ticker` (companies and gold/silver/crypto ETFs, `kind = fund`), `/rankings/:metric` (incl. `/rankings/fund-assets`).
+
+## ETFs (SEC Form N-PORT)
+
+- `briefing.etfs` lists ~300 large ETFs (`fund_key` = SEC series ID, or the trust's CIK for unit investment trusts such as SPY, DIA, MDY). `briefing.etf_holdings` keeps each fund's top 50 holdings, linked to `companies` by issuer name where unambiguous.
+- Job `etf-nport` (every 5 minutes) runs `briefing.refresh_etfs(15)`: checks the 15 least recently checked ETFs for a newer public N-PORT and loads it. Every ETF is checked about once a day.
+- Pages: `/etfs`, `/etf/:ticker` (top 10 public, top 50 signed in), and an "ETFs that hold …" table on each company page.
