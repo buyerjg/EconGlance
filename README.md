@@ -1,11 +1,13 @@
-# TrendTracker Today
+# The Trend Brief
+
+Live at https://thetrendbrief.pages.dev
 
 Daily US market brief: market closes, what moved markets, official economic data (FRED),
 what America searched (Google Trends), and "this day in markets" 1–10 years ago.
 
 ## How it works
 
-- **Data** lives in Supabase (project `trendtracker`, us-east-1):
+- **Data** lives in Supabase (project `trendtracker`, us-east-1; GitHub repo `buyerjg/trendtracker`):
   - `briefing.us_daily` — one row per day, written each morning by a scheduled Claude task.
   - `briefing.series` / `briefing.observations` — 23 official US series pulled from FRED by `pg_cron` twice a day.
   - Site-facing functions `public.tt_today()`, `public.tt_series()`, `public.tt_catalog()` are callable **only** with the secret key.

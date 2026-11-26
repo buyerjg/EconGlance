@@ -1,6 +1,6 @@
 import { escapeHtml as e } from './_lib.js';
 
-export const SITE_NAME = 'TrendTracker Today';
+export const SITE_NAME = 'The Trend Brief';
 
 export function page({ title, description, canonical, body, scripts = '' }) {
   return `<!doctype html>
@@ -19,7 +19,7 @@ ${canonical ? `<link rel="canonical" href="${e(canonical)}">` : ''}
 </head>
 <body>
 <header class="site-header">
-  <a class="brand" href="/">TrendTracker<span>Today</span></a>
+  <a class="brand" href="/">The Trend<span>Brief</span></a>
   <nav>
     <a href="/">Today</a>
     <a href="/indicators">Indicators</a>
@@ -31,7 +31,7 @@ ${body}
 </main>
 <footer class="site-footer">
   <p>Official data from U.S. government agencies via FRED®, Federal Reserve Bank of St. Louis. Market closes and news summaries link to their sources. For information only — not investment advice.</p>
-  <p>© ${new Date().getUTCFullYear()} TrendTracker</p>
+  <p>© ${new Date().getUTCFullYear()} The Trend Brief</p>
 </footer>
 <script src="/account.js" defer></script>
 ${scripts}
