@@ -43,13 +43,14 @@ export async function onRequestGet(context) {
   const body = `<p class="crumbs"><a href="/playbooks">Investor playbooks</a> · ${e(pb.investor)}</p>
 <h1>${e(pb.title)}</h1>
 ${pb.intro.map((p) => `<p class="lede">${e(p)}</p>`).join('')}
+${pb.source ? `<p class="note">Source: <a href="${e(pb.source.url)}" rel="noopener" target="_blank">${e(pb.source.label)}</a></p>` : ''}
 <div class="panel"><strong>${e(summary)}</strong></div>
 <form class="controls" method="get"><label>Compare with <input type="date" name="vs" value="${e(vs)}" min="1991-01-01" max="${e(today)}"></label><button type="submit" class="btn">Compare</button></form>
 <p class="quick-links">Quick compare: ${quick}</p>
 <div class="table-wrap"><table class="playbook"><thead><tr><th>Signal</th><th>${e(vsLabel)}</th><th>Today</th></tr></thead><tbody>${rows}</tbody></table></div>
 <p class="note">Rows highlighted have changed since ${e(vsLabel)}. Each reading uses the latest data for that period available in our database; past readings use revised data, so they can differ slightly from what was known at the time.</p>
 ${pb.notTracked && pb.notTracked.length ? `<h2>Not tracked here</h2><ul class="list">${pb.notTracked.map((x) => `<li>${e(x)}</li>`).join('')}</ul>` : ''}
-<section><h2>About this page</h2><p class="note">This page summarizes publicly stated views of ${e(pb.investor)} and measures them with official data from the Federal Reserve, BEA, BLS and the Treasury via FRED. The labels (such as “Loose” or “Tightening”) are our own simple rules, not ${e(pb.investor)}’s. ${e(pb.investor)} is not affiliated with and does not endorse The Trend Brief. Not investment advice.</p></section>`;
+<section><h2>About this page</h2><p class="note">This page summarizes publicly stated views of ${e(pb.investor)} and measures them with official data from the Federal Reserve, BEA, BLS and the Treasury. The labels (such as “Loose” or “Tightening”) are our own simple rules, not ${e(pb.investor)}’s. ${e(pb.investor)} is not affiliated with and does not endorse The Trend Brief. Not investment advice.</p></section>`;
 
   return html(page({
     title: `${pb.seoTitle} | ${SITE_NAME}`,

@@ -65,13 +65,14 @@ export const PLAYBOOKS = {
     seoTitle: 'Druckenmiller indicators: the macro checklist he watches, today vs. January 2026',
     blurb: 'The macro signals Stanley Druckenmiller has described watching — Fed policy against growth, commodities and copper, credit, the economy — with today’s readings from official data.',
     defaultVs: '2026-01-15',
-    series: ['GDP', 'DFF', 'DFEDTARU', 'PPIACO', 'WPU102502', 'NFCICREDIT', 'STLFSI4', 'A191RL1Q225SBEA', 'UNRATE', 'PCEPILFE', 'DTWEXBGS'],
+    source: { url: 'https://www.youtube.com/watch?v=6r3D-CMJkuI', label: 'Watch the November 2026 interview on YouTube' },
+    series: ['GDP', 'DFF', 'DFEDTARU', 'PPIACO', 'WPU102502', 'GZSPREAD', 'DRTSCILM', 'NFCICREDIT', 'STLFSI4', 'A191RL1Q225SBEA', 'UNRATE', 'PCEPILFE', 'DTWEXBGS'],
     intro: [
       'In a public conversation in November 2026, Druckenmiller compared the conditions he saw in January 2026 with those at the time. In January, he said, policy looked very loose: the federal funds rate was about 3.5% while nominal growth was around 6%, with more rate cuts expected. Commodities, copper included, were breaking out, market breadth was making new highs and credit spreads were tight, so a recession within a year looked very unlikely to him.',
       'By November he described almost all of that as reversed: the Fed tightening rather than cutting, commodities and copper rolling over, breadth peaking months before the indexes, credit spreads widening and defensive stocks leading cyclicals. With less clarity than at almost any time in his career, he said he had stepped back from big positions.',
       'This page tracks the signals from that list that can be measured with free official data, so you can compare any two dates yourself.',
     ],
-    notTracked: ['Stock market breadth (the advance-decline line)', 'Cyclical vs. defensive stock performance', 'Corporate bond spreads (licensed data; the Chicago Fed credit index is shown instead)'],
+    notTracked: ['Stock market breadth (the advance-decline line) — needs daily prices for every listed stock', 'Cyclical vs. defensive stock performance — needs daily sector prices', 'High-yield (junk) bond spreads — licensed index data'],
     items: [
       { key: 'policy', label: 'Monetary policy: nominal growth minus the Fed funds rate', series: ['GDP', 'DFF'], why: 'When the economy grows much faster in dollar terms than the policy rate, money is loose.',
         calc: (D, date) => { const g = D.yoy('GDP', date), r = D.at('DFF', date); if (!g || !r) return null; const gap = g.v - r.v;
@@ -83,6 +84,12 @@ export const PLAYBOOKS = {
         calc: (D, date) => { const t = trend(D, 'PPIACO', date); return t && { ...t, value: t.label }; } },
       { key: 'copper', label: 'Copper prices (copper & brass mill shapes PPI)', series: ['WPU102502'], why: 'Copper is a classic read on global industrial demand. Monthly producer prices can lag futures prices.',
         calc: (D, date) => { const t = trend(D, 'WPU102502', date); return t && { ...t, value: t.label }; } },
+      { key: 'spread', label: 'Corporate bond credit spread (Federal Reserve GZ spread)', series: ['GZSPREAD'], why: 'The extra yield investors demand to lend to companies over Treasuries; he cited widening spreads as a warning.',
+        calc: (D, date) => { const p = D.at('GZSPREAD', date), c = D.chg('GZSPREAD', date, 3); if (!p || !c) return null;
+          return { value: `${f2(p.v)} pts`, text: `${sg(c.v)} in 3 months · ${monthLabel(p.d)}`, label: c.v > 0.1 ? 'Widening' : c.v < -0.1 ? 'Narrowing' : 'Stable', tone: c.v > 0.1 ? 'off' : c.v < -0.1 ? 'on' : 'neutral', d: p.d }; } },
+      { key: 'banks', label: 'Banks tightening business-loan standards (Fed survey)', series: ['DRTSCILM'], why: 'Net share of banks making it harder for companies to borrow; above zero means tightening.',
+        calc: (D, date) => { const p = D.at('DRTSCILM', date); if (!p) return null;
+          return { value: `${sg(p.v, 1)}%`, text: quarterLabel(p.d), label: p.v > 10 ? 'Tightening' : p.v < 0 ? 'Easing' : 'Little change', tone: p.v > 10 ? 'off' : p.v < 0 ? 'on' : 'neutral', d: p.d }; } },
       { key: 'credit', label: 'Credit conditions (Chicago Fed credit subindex)', series: ['NFCICREDIT'], why: 'Tightening credit tends to come before slower growth; below zero means looser than average.',
         calc: (D, date) => { const p = D.at('NFCICREDIT', date), c = D.chg('NFCICREDIT', date, 3); if (!p || !c) return null;
           return { value: f2(p.v), text: `${sg(c.v)} in 3 months`, label: c.v > 0.02 ? 'Tightening' : c.v < -0.02 ? 'Easing' : 'Stable', tone: c.v > 0.02 ? 'off' : c.v < -0.02 ? 'on' : 'neutral', d: p.d }; } },
