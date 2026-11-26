@@ -1,6 +1,6 @@
-# The Trend Brief
+# EconGlance
 
-Live at https://thetrendbrief.pages.dev
+Live at https://econglance.pages.dev
 
 Daily US market brief: market closes, what moved markets, official economic data (FRED),
 what America searched (Google Trends), and "this day in markets" 1–10 years ago.

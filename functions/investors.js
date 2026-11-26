@@ -15,7 +15,7 @@ export async function onRequestGet(context) {
   const body = `<h1>What famous investors own</h1>
 <p class="lede">The latest stock portfolios of Warren Buffett, Stanley Druckenmiller, Bill Ackman, Michael Burry and other well-known investors, from the 13F reports their firms file with the SEC every quarter.</p>
 <div class="table-wrap"><table><thead><tr><th>Investor</th><th class="num">Portfolio</th><th class="num">Positions</th><th>Largest holding</th><th class="num">Quarter</th></tr></thead><tbody>${rows || '<tr><td colspan="5" class="note">Data is loading. Please check back shortly.</td></tr>'}</tbody></table></div>
-<p class="note">13F reports cover US-listed stocks, ETFs and options at quarter-end and are filed up to 45 days later. They leave out short positions, cash, bonds and non-US holdings. The people named are not affiliated with and do not endorse The Trend Brief. Not investment advice.</p>`;
+<p class="note">13F reports cover US-listed stocks, ETFs and options at quarter-end and are filed up to 45 days later. They leave out short positions, cash, bonds and non-US holdings. The people named are not affiliated with and do not endorse EconGlance. Not investment advice.</p>`;
   return html(page({
     title: `Famous investors’ portfolios: Buffett, Druckenmiller, Ackman, Burry 13F holdings | ${SITE_NAME}`,
     description: 'Latest 13F stock holdings of Warren Buffett, Stanley Druckenmiller, Bill Ackman, Michael Burry and more, with new buys and sales each quarter.',
