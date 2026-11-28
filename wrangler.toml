@@ -1,9 +1,0 @@
-name = "econglance"
-compatibility_date = "2026-11-01"
-pages_build_output_dir = "public"
-
-# Public (non-secret) settings. The secret key is NOT stored here:
-# set SUPABASE_SECRET_KEY in Cloudflare Pages > Settings > Variables and Secrets (type: Secret).
-[vars]
-SUPABASE_URL = "https://fddflhppvruykllrkblj.supabase.co"
-SUPABASE_PUBLISHABLE_KEY = "sb_publishable_XonY1fZcN7ro8HI9F8mk6g_HKfKgtqV"

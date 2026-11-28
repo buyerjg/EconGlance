@@ -1,0 +1,23 @@
+// Cloudflare Workers config. Static files in ./public are served directly;
+// pages and the data API run in src/worker.js.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "econglance",
+  "main": "src/worker.js",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "not_found_handling": "none"
+  },
+  // Public (non-secret) settings. The secret key is NOT stored here: set SUPABASE_SECRET_KEY
+  // in Cloudflare > Workers & Pages > econglance > Settings > Variables and Secrets (type: Secret).
+  // CONTACT_EMAIL can be added there too.
+  "vars": {
+    "SUPABASE_URL": "https://fddflhppvruykllrkblj.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_XonY1fZcN7ro8HI9F8mk6g_HKfKgtqV"
+  },
+  // Daily keep-alive for the free Supabase project (03:23 KST).
+  "triggers": { "crons": ["23 18 * * *"] },
+  "observability": { "enabled": true }
+}

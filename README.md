@@ -1,28 +1,28 @@
 # EconGlance
 
-Live at https://econglance.pages.dev
+Runs on Cloudflare Workers (see Deploy below).
 
 Daily US market brief: market closes, what moved markets, official economic data (FRED),
 what America searched (Google Trends), and "this day in markets" 1–10 years ago.
 
 ## How it works
 
-- **Data** lives in Supabase (project `trendtracker`, us-east-1; GitHub repo `buyerjg/trendtracker`):
+- **Data** lives in Supabase (project `trendtracker`, us-east-1; GitHub repo `buyerjg/EconGlance`):
   - `briefing.us_daily` — one row per day, written each morning by a scheduled Claude task.
   - `briefing.series` / `briefing.observations` — 23 official US series pulled from FRED by `pg_cron` twice a day.
   - Site-facing functions `public.tt_today()`, `public.tt_series()`, `public.tt_catalog()` are callable **only** with the secret key.
-- **Site** is Cloudflare Pages with Pages Functions (no build step):
+- **Site** is a Cloudflare Worker with static assets (no build step). `src/worker.js` routes requests to the page and API modules in `functions/`; files in `public/` are served directly. A daily cron in the Worker pings Supabase so the free project never pauses:
   - `/` today's brief, `/indicators`, `/indicator/:id` — rendered on the server for SEO.
   - `/api/*` — data for charts. Blocked for scripts/bots; anonymous visitors get 1 year, signed-in users get full history.
   - `/login` — free account via Supabase email link.
 
-## Deploy (Cloudflare Pages)
+## Deploy (Cloudflare Workers)
 
-1. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → `buyerjg/trendtracker`.
-2. Build settings: framework **None**, build command **empty**, output directory **`public`**.
-3. Settings → Variables and Secrets → add **`SUPABASE_SECRET_KEY`** as type **Secret**
-   (Supabase → Project Settings → API Keys → Secret keys). Never commit it.
-4. Supabase → Authentication → URL Configuration: set Site URL to the Pages URL (or your domain) and add `https://<your-domain>/**` to Redirect URLs (the wildcard lets sign-in return people to the page they were on).
+1. Cloudflare dashboard → Workers & Pages → Create → Workers → Import a repository → `buyerjg/EconGlance`.
+2. Build settings: build command **empty**, deploy command **`npx wrangler deploy`** (the default). Config is in `wrangler.jsonc`.
+3. Worker → Settings → Variables and Secrets → add **`SUPABASE_SECRET_KEY`** as type **Secret**
+   (Supabase → Project Settings → API Keys → Secret keys). Never commit it. Optional: `CONTACT_EMAIL` (plain text).
+4. Supabase → Authentication → URL Configuration: set Site URL to the Worker URL (or your domain) and add `https://<your-domain>/**` to Redirect URLs (the wildcard lets sign-in return people to the page they were on).
 
 ## Bot protection (dashboard settings)
 
