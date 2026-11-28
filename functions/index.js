@@ -1,14 +1,23 @@
 import { rpc, escapeHtml as e } from './_lib.js';
 import { page, html, num, signed, dir, asOf, officialValue, slug, sourceLink, SITE_NAME } from './_layout.js';
+import { money, companyName, quarterName } from './_fin.js';
+import { buffettSeries, quarterLabel } from './_playbooks.js';
 
 // GET / — today's brief, rendered on the server so search engines can read it.
 export async function onRequestGet(context) {
   const { env, request } = context;
   let data;
+  const since = new Date(Date.now() - 3 * 365 * 864e5).toISOString().slice(0, 10);
+  const [obs, cos, etfs, invs] = await Promise.all([
+    rpc(env, 'tt_obs', { p_ids: ['NCBEILQ027S', 'GDP'], p_start: since, p_monthly: false }).catch(() => ({})),
+    rpc(env, 'tt_companies', { p_sort: 'revenue', p_limit: 1 }).catch(() => []),
+    rpc(env, 'tt_etfs', { p_limit: 1 }).catch(() => []),
+    rpc(env, 'tt_investors').catch(() => []),
+  ]);
   try {
     data = await rpc(env, 'tt_today');
   } catch (err) {
-    return html(page({ title: SITE_NAME, description: 'Daily market brief', body: '<p class="note">Today\'s brief is temporarily unavailable. Please try again shortly.</p>' }), { maxAge: 60 });
+    return html(page({ title: SITE_NAME, description: 'Daily market brief', canonical: `${new URL(request.url).origin}/`, body: '<h1>Today’s brief is updating</h1><p class="note">Try again in a few minutes, or explore <a href="/indicators">economic indicators</a>, <a href="/companies">companies</a> and <a href="/investors">investor portfolios</a>.</p>' }), { maxAge: 60 });
   }
   const b = (data && data.brief) || {};
   const mood = data && data.mood && data.mood.score !== undefined ? data.mood : null;
@@ -38,12 +47,25 @@ export async function onRequestGet(context) {
     return `${head}<tr><td><a href="${slug(o.series_id)}">${e(o.name)}</a>${o.unit.startsWith('thousands') ? ` <span class="muted">(${e(o.unit)})</span>` : ''}</td><td class="num">${e(officialValue(o.value, o.unit))}</td><td class="num ${dir(o.chg)}">${e(officialValue(o.chg, o.unit, true))}</td><td class="num">${e(officialValue(o.year_ago, o.unit))}</td><td class="num muted">${e(asOf(o.as_of, o.frequency))}</td></tr>`;
   }).join('');
 
+  // Four doors into the rest of the site, each showing a live figure.
+  const tiles = [];
+  const bi = buffettSeries(obs || {}).pop();
+  if (bi) tiles.push(['/playbooks/buffett-indicator', 'Buffett Indicator', `${bi[1].toFixed(0)}%`, `Stock market value vs GDP, ${quarterLabel(bi[0])}`]);
+  const top = (cos || [])[0];
+  if (top) tiles.push(['/companies', 'Largest US company by revenue', top.ticker, `${companyName(top.name)}, ${money(top.revenue)}`]);
+  const etf = (etfs || [])[0];
+  if (etf) tiles.push(['/etfs', 'Largest ETF', etf.ticker, `${money(etf.net_assets)} in ${etf.n_holdings ?? '—'} holdings`]);
+  const brk = (invs || []).find((m) => m.slug === 'berkshire-hathaway') || (invs || [])[0];
+  if (brk && brk.top) tiles.push(['/investor/' + encodeURIComponent(brk.slug), `${brk.person || brk.display_name}’s largest holding`, brk.top.ticker || companyName(brk.top.issuer), `${brk.top.pct != null ? (+brk.top.pct).toFixed(0) + '% of the portfolio' : ''}, ${quarterName(brk.period)}`]);
+  const explore = tiles.length ? `<nav class="explore" aria-label="Explore">${tiles.map(([u, k, v, t]) => `<a href="${u}"><div class="x-k">${e(k)}</div><div class="x-v">${e(v)}</div><div class="x-t">${e(t)}</div></a>`).join('')}</nav>` : '';
+
   const body = `
 <section class="hero">
-  <p class="eyebrow">Market session ${e(b.market_date || '')}</p>
+  ${b.market_date ? `<p class="eyebrow">Market close, ${e(new Date(b.market_date + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' }))}</p>` : ''}
   <h1>What happened in markets today</h1>
   <p class="lede">${e(b.summary || '')}</p>
 </section>
+${explore}
 
 <div class="top-row">
   ${mood ? `<section class="panel" id="mood">
@@ -96,7 +118,7 @@ ${(b.econ || []).length ? `<section id="econ">
 </section>`;
 
   return html(page({
-    title: `${SITE_NAME} — Daily market brief`,
+    title: `${SITE_NAME}: today’s markets, economic data and company financials`,
     description: (b.summary || 'Daily market brief: stocks, rates, oil, official economic data and what America searched.').slice(0, 300),
     canonical: `${origin}/`,
     body,

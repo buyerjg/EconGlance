@@ -39,11 +39,11 @@
     area.style.position = 'relative';
     rows.forEach((r, i) => {
       const cx = m.l + slot * i + slot / 2;
-      [[r[1], '#2f6fdc', -1, 'Revenue'], [r[2], '#2aa876', 1, 'Net income']].forEach(([v, color, side, label]) => {
+      [[r[1], 'var(--accent)', -1, 'Revenue'], [r[2], 'var(--c2)', 1, 'Net income']].forEach(([v, color, side, label]) => {
         if (v == null) return;
         const y = Math.min(Y(v), Y(0)), h = Math.max(1, Math.abs(Y(v) - Y(0)));
         const x = side < 0 ? cx - bw - 1 : cx + 1;
-        const rect = el('rect', { x, y, width: bw, height: h, rx: 2, style: `fill:${v < 0 ? '#d23f3f' : color}` });
+        const rect = el('rect', { x, y, width: bw, height: h, rx: 2, style: `fill:${v < 0 ? 'var(--down)' : color}` });
         rect.addEventListener('mouseenter', () => { tip.hidden = false; tip.textContent = `${r[0]} ${label}: ${fmt(v)}`; tip.style.left = Math.min(x, W - 160) + 'px'; tip.style.top = Math.max(0, y - 28) + 'px'; });
         rect.addEventListener('mouseleave', () => { tip.hidden = true; });
         svg.append(rect);

@@ -87,7 +87,7 @@ async function buffett(env, url) {
   <div class="stat"><div class="stat-label">Historical rank</div><div class="stat-value">${pctile}th</div><div class="stat-sub">percentile since 1950</div></div>
   <div class="stat"><div class="stat-label">Record high</div><div class="stat-value">${peak[1].toFixed(0)}%</div><div class="stat-sub">${e(quarterLabel(peak[0]))}</div></div>
 </div>
-<section class="chart-box pb-chart" data-points='${e(JSON.stringify(chart))}' data-unit="%" aria-label="Buffett Indicator since 1970"><div class="legend"><span><i style="background:#2f6fdc"></i>Stock market value as % of GDP</span><span><i style="background:#999"></i>Long-run average</span></div><div class="chart" data-avg="${avg.toFixed(1)}"></div></section>
+<section class="chart-box pb-chart" data-points='${e(JSON.stringify(chart))}' data-unit="%" aria-label="Buffett Indicator since 1970"><div class="legend"><span><i style="background:var(--accent)"></i>Stock market value as % of GDP</span><span><i style="background:var(--muted)"></i>Long-run average</span></div><div class="chart" data-avg="${avg.toFixed(1)}"></div></section>
 ${marks.length ? `<h2>Past turning points</h2><ul class="mini">${marks.map(([l, v]) => `<li><span>${e(l)}</span><span>${v.toFixed(0)}%</span></li>`).join('')}</ul>` : ''}
 <h2>What it measures</h2>
 <p>In a 2001 interview with Fortune, Warren Buffett said the ratio of the stock market’s total value to the size of the economy was probably the best single measure of where valuations stand. The idea is simple: over long periods, company values cannot grow much faster than the economy that produces their profits. A high reading means investors are paying a lot for each dollar of economic output.</p>

@@ -20,7 +20,7 @@
       for (let i = 0; i <= 4; i++) { const v = y0 + ((y1 - y0) * i) / 4; svg.append(el('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'grid' })); svg.append(el('text', { x: m.l - 6, y: Y(v) + 4, 'text-anchor': 'end', class: 'axis' }, Math.round(v) + unit)); }
       const step = Math.ceil(pts.length / 8);
       pts.forEach((p, i) => { if (i % step === 0) svg.append(el('text', { x: X(i), y: H - 8, 'text-anchor': 'middle', class: 'axis' }, String(p[0]).slice(0, 4))); });
-      if (avg != null) svg.append(el('line', { x1: m.l, x2: W - m.r, y1: Y(avg), y2: Y(avg), style: 'stroke:#999;stroke-dasharray:4 4' }));
+      if (avg != null) svg.append(el('line', { x1: m.l, x2: W - m.r, y1: Y(avg), y2: Y(avg), style: 'stroke:var(--muted);stroke-dasharray:4 4' }));
       svg.append(el('path', { d: pts.map((p, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(p[1]).toFixed(1)).join(''), class: 'line' }));
       const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; area.style.position = 'relative';
       svg.addEventListener('mousemove', (ev) => {

@@ -61,7 +61,7 @@ export async function onRequestGet(context) {
 <div class="stat-row">${stats}</div>
 
 <section class="chart-box" id="fin-chart" data-chart='${e(JSON.stringify(fin.chart))}' aria-label="Revenue and net income by fiscal year">
-  <div class="legend"><span><i style="background:#2f6fdc"></i>Revenue</span><span><i style="background:#2aa876"></i>Net income</span></div>
+  <div class="legend"><span><i style="background:var(--accent)"></i>Revenue</span><span><i style="background:var(--c2)"></i>Net income</span></div>
   <div class="chart"></div>
 </section>
 ${more ? `<p class="login-hint" id="fin-more"><button type="button" class="link-btn" id="fin-all">Show all ${d.years_available} years</button> — free with an account. <a href="/login">Sign in</a></p>` : ''}
@@ -111,7 +111,7 @@ function fundPage(d, origin) {
 <p class="lede">${lede}</p>
 <div class="stat-row">${stats}</div>
 <section class="chart-box" id="fin-chart" data-chart='${e(JSON.stringify(fin.chart))}' aria-label="Value of holdings over time">
-  <div class="legend"><span><i style="background:#2f6fdc"></i>Value of holdings</span></div>
+  <div class="legend"><span><i style="background:var(--accent)"></i>Value of holdings</span></div>
   <div class="chart"></div>
 </section>
 <p class="login-hint" id="fin-more"><button type="button" class="link-btn" id="fin-all">Show full history</button> — free with an account. <a href="/login">Sign in</a></p>

@@ -1,3 +1,5 @@
+import { notFoundPage } from './_pages.js';
+
 // Bot filter for the data API. HTML pages stay open so search engines can index them;
 // the raw data behind them (/api/*) is only served to our own pages.
 //
@@ -23,6 +25,10 @@ export async function onRequest(context) {
   }
 
   const res = await next();
+  // Friendly 404 page for anything a person can land on.
+  if (res.status === 404 && !url.pathname.startsWith('/api/') && request.method === 'GET' && (request.headers.get('Accept') || '').includes('text/html')) {
+    return notFoundPage(request);
+  }
   if (url.pathname.startsWith('/api/')) {
     const r = new Response(res.body, res);
     r.headers.set('X-Robots-Tag', 'noindex');

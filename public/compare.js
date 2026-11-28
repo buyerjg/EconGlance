@@ -8,7 +8,7 @@
   const area = box.querySelector('.chart');
   const hint = box.querySelector('.login-hint');
   const buttons = Array.from(box.querySelectorAll('[data-range]'));
-  const COLORS = ['#2f6fdc', '#e07b39', '#2aa876'];
+  const COLORS = ['var(--accent)', 'var(--c2)', 'var(--c3)'];
   let range = '1y';
   let loaded = [];
 
